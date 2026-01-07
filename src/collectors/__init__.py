@@ -6,16 +6,17 @@ Exports:
     - CollectorResponse: Standardized response model
     - SERPResult: Individual search result
     - SerperCollector: Serper.dev API
-    - SerperFullResponse: Complete SERP data with all features
+    - SerperFullResponse: Complete SERP data
     - CompetitionMetrics: Keyword competition analysis
     - GSCCollector: Google Search Console
-    - DuckDuckGoCollector: Free backup search
+    - DuckDuckGoCollector: DuckDuckGo search
+    - DDGFullResponse: Full DDG response with news
 """
 
 from src.collectors.base import BaseCollector, CollectorResponse, SERPResult
 from src.collectors.serper import SerperCollector, SerperFullResponse, CompetitionMetrics
 from src.collectors.gsc import GSCCollector, GSCResult
-from src.collectors.duckduckgo import DuckDuckGoCollector
+from src.collectors.duckduckgo import DuckDuckGoCollector, DDGFullResponse
 
 __all__ = [
     "BaseCollector",
@@ -27,6 +28,7 @@ __all__ = [
     "GSCCollector",
     "GSCResult",
     "DuckDuckGoCollector",
+    "DDGFullResponse",
 ]
 
 
