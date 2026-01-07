@@ -12,34 +12,45 @@ def main():
     """Main entry point."""
     from config import get_settings
     from config.logging import setup_logging
-    from src.utils import validate_url, validate_keywords, SEOFlowError
+    from src.utils import validate_keywords, SEOFlowError
+    from src.collectors import get_collector
     
-    # Initialize logging
+    # Initialize
     logger = setup_logging()
-    
-    # Load settings
     settings = get_settings()
     
     print("=" * 50)
-    print("SEO Flow v0.3.0")
+    print("SEO Flow v0.4.0")
     print("AI-Powered SEO Automation Workflow")
     print("=" * 50)
     
-    # Test utils
     print("\n[Config]")
     print(f"  Data Source: {settings.default_data_source}")
     print(f"  Serper API: {'configured' if settings.has_serper_key() else 'not set'}")
-    print(f"  Gemini API: {'configured' if settings.has_gemini_key() else 'not set'}")
     
-    print("\n[Utils Test]")
+    # Test collector
+    print("\n[Collector Test]")
     try:
-        url = validate_url("example.com")
-        print(f"  URL validated: {url}")
+        collector = get_collector(settings.default_data_source)
         
-        keywords = validate_keywords("python, SEO, automation")
-        print(f"  Keywords: {keywords}")
+        if not collector.health_check():
+            print("  Collector not ready - API key missing")
+            return 1
+        
+        # Fetch real data
+        query = "python seo automation"
+        print(f"  Query: {query}")
+        response = collector.collect(query, num_results=5)
+        
+        if response.success:
+            print(f"  Results: {len(response.data)} found")
+            for result in response.data[:3]:
+                print(f"    #{result.position}: {result.title[:50]}...")
+        else:
+            print(f"  Error: {response.error}")
+            
     except SEOFlowError as e:
-        print(f"  Validation error: {e}")
+        print(f"  Error: {e}")
     
     return 0
 
