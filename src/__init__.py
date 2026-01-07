@@ -2,4 +2,4 @@
 seo-flow: AI-powered SEO automation workflow.
 """
 
-__version__ = "0.3.0"
+__version__ = "0.6.1"
