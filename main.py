@@ -20,13 +20,14 @@ def main():
     settings = get_settings()
     
     print("=" * 50)
-    print("SEO Flow v0.4.0")
+    print("SEO Flow v0.4.1")
     print("AI-Powered SEO Automation Workflow")
     print("=" * 50)
     
     print("\n[Config]")
     print(f"  Data Source: {settings.default_data_source}")
     print(f"  Serper API: {'configured' if settings.has_serper_key() else 'not set'}")
+    print(f"  GSC Credentials: {'configured' if settings.has_gsc_credentials() else 'not set'}")
     
     # Test collector
     print("\n[Collector Test]")
