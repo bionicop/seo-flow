@@ -7,11 +7,13 @@ Exports:
     - SERPResult: Individual search result
     - SerperCollector: Serper.dev API
     - GSCCollector: Google Search Console
+    - DuckDuckGoCollector: Free backup search
 """
 
 from src.collectors.base import BaseCollector, CollectorResponse, SERPResult
 from src.collectors.serper import SerperCollector
 from src.collectors.gsc import GSCCollector, GSCResult
+from src.collectors.duckduckgo import DuckDuckGoCollector
 
 __all__ = [
     "BaseCollector",
@@ -20,6 +22,7 @@ __all__ = [
     "SerperCollector",
     "GSCCollector",
     "GSCResult",
+    "DuckDuckGoCollector",
 ]
 
 
@@ -28,7 +31,7 @@ def get_collector(source: str = "serper") -> BaseCollector:
     Factory function to get appropriate collector.
 
     Args:
-        source: Collector type ('serper', 'gsc').
+        source: Collector type ('serper', 'gsc', 'duckduckgo').
 
     Returns:
         Collector instance.
@@ -43,6 +46,7 @@ def get_collector(source: str = "serper") -> BaseCollector:
     collectors = {
         "serper": SerperCollector,
         "gsc": GSCCollector,
+        "duckduckgo": DuckDuckGoCollector,
     }
 
     if source not in collectors:
