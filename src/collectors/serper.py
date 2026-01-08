@@ -9,6 +9,7 @@ Requires SERPER_API_KEY in environment.
 
 import time
 from datetime import datetime
+from threading import Lock
 from typing import Any
 from urllib.parse import urlparse
 
@@ -21,6 +22,47 @@ from src.utils.decorators import log_execution_time, retry
 from src.utils.exceptions import AuthenticationError, CollectorError, RateLimitError
 
 logger = get_logger(__name__)
+
+
+class RateLimiter:
+    """
+    Thread-safe rate limiter for API requests.
+    
+    Ensures minimum interval between requests to avoid rate limiting.
+    """
+    
+    def __init__(self, min_interval: float = 0.5):
+        """
+        Initialize rate limiter.
+        
+        Args:
+            min_interval: Minimum seconds between requests.
+        """
+        self._min_interval = min_interval
+        self._last_request_time = 0.0
+        self._lock = Lock()
+    
+    def wait(self) -> None:
+        """Wait if necessary to respect rate limit."""
+        with self._lock:
+            current_time = time.time()
+            elapsed = current_time - self._last_request_time
+            
+            if elapsed < self._min_interval:
+                sleep_time = self._min_interval - elapsed
+                logger.debug("Rate limiting: sleeping %.2fs", sleep_time)
+                time.sleep(sleep_time)
+            
+            self._last_request_time = time.time()
+    
+    def reset(self) -> None:
+        """Reset the rate limiter state."""
+        with self._lock:
+            self._last_request_time = 0.0
+
+
+# Global rate limiter for Serper API (shared across instances)
+_serper_rate_limiter = RateLimiter(min_interval=0.5)
 
 
 class SerperFullResponse:
@@ -271,6 +313,9 @@ class SerperCollector(BaseCollector):
         # Add time filter for trend analysis
         if time_filter and time_filter in self.TIME_FILTERS:
             payload["tbs"] = self.TIME_FILTERS[time_filter]
+
+        # Apply rate limiting
+        _serper_rate_limiter.wait()
 
         response = requests.post(
             self.BASE_URL,

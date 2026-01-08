@@ -45,6 +45,34 @@ class KeywordAnalyzer:
         self.serper = serper_collector or SerperCollector()
         self.ddg = duckduckgo_collector or DuckDuckGoCollector()
     
+    @staticmethod
+    def _validate_keyword(keyword: str) -> str:
+        """
+        Validate and sanitize keyword input.
+        
+        Args:
+            keyword: Raw keyword input.
+        
+        Returns:
+            Sanitized keyword string.
+        
+        Raises:
+            ValueError: If keyword is invalid.
+        """
+        if not keyword:
+            raise ValueError("Keyword cannot be empty")
+        
+        # Strip whitespace
+        keyword = keyword.strip()
+        
+        if len(keyword) < 2:
+            raise ValueError("Keyword must be at least 2 characters")
+        
+        if len(keyword) > 200:
+            raise ValueError("Keyword cannot exceed 200 characters")
+        
+        return keyword
+    
     def analyze(
         self,
         keyword: str,
@@ -56,14 +84,20 @@ class KeywordAnalyzer:
         Perform complete keyword analysis.
         
         Args:
-            keyword: Target keyword to analyze.
+            keyword: Target keyword to analyze (2-200 chars).
             target_url: URL to track ranking position.
             country: Country code for localization.
             language: Language code.
         
         Returns:
             KeywordAnalysis with all metrics and opportunities.
+        
+        Raises:
+            ValueError: If keyword is invalid.
         """
+        # Input validation
+        keyword = self._validate_keyword(keyword)
+        
         logger.info("Starting keyword analysis: %s", keyword)
         
         # Collect SERP data

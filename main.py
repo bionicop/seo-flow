@@ -20,7 +20,7 @@ def main():
     settings = get_settings()
     
     print("=" * 60)
-    print("SEO Flow v0.6.3")
+    print("SEO Flow v0.6.4")
     print("AI-Powered SEO Automation Workflow")
     print("=" * 60)
     
